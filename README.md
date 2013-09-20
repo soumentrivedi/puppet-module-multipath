@@ -1,8 +1,6 @@
 Puppet module multipath
 =======================
 
-##Module Description
-
 The module manages DM-Multipathing on redhat family systems.
 
 ##Usage:
