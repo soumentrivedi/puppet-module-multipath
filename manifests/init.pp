@@ -91,7 +91,7 @@ class multipath(
       
     service {$service_name:
       ensure     => $ensure_real,
-      enable     => $enable_real,
+      enable     => $enable,
       hasstatus  => true,
       hasrestart => true,
     }
