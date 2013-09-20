@@ -14,6 +14,10 @@
 #      Should the service be running
 #      Default: true
 #
+#    [*installed*]
+#      Should the device-mapper-multipath be installed
+#      Default: true
+#
 #    [*user_friendly_names*]
 #      If this is set to yes the multipath -ll command will give mpathX names
 #      to LUNs insted of there numbers.
@@ -31,6 +35,7 @@
 class multipath(
   $enable = true,
   $ensure = true,
+  $installed = true,
   $user_friendly_names = 'yes',
   $path_grouping_policy = 'multibus',
   $find_multipaths = 'yes'
@@ -46,6 +51,11 @@ class multipath(
     $ensure_real = $ensure ? {
       true  => 'running',
       false => 'stopped',
+    }
+
+    $installed_real = $installed ? {
+      true  => 'present',
+      false => 'absent',
     }
       
     $package_name = $lsbmajdistrelease ? {
@@ -65,11 +75,14 @@ class multipath(
     }
       
     package {$package_name:
-      ensure => installed,
+      ensure => $installed_real,
     }
      
     file {$mpath_config_file:
-      ensure  => present,
+      ensure  => $installed ? {
+        true  => present,
+        false => absent,
+      },
       owner   => 'root',
       group   => 'root',
       mode    => '0644',
@@ -82,7 +95,10 @@ class multipath(
       hasstatus  => true,
       hasrestart => true,
     }
-     
-    Package[$package_name] -> File[$mpath_config_file] ~> Service[$service_name]
+    
+    Package[$package_name] -> 
+    File[$mpath_config_file] ~> 
+    Service[$service_name]
   }
+
 }# End Class
