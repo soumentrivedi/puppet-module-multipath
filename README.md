@@ -7,7 +7,8 @@ The module manages DM-Multipathing on redhat family systems.
 
   ```puppet
   class {'multipath':
-   user_friendly_names => 'yes',
+   user_friendly_names  => 'yes',
+   path_grouping_policy => failover, 
   }
   ```
 ##Other class parameters
