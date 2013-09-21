@@ -14,7 +14,7 @@ The module manages DM-Multipathing on redhat family systems.
   To remove multipath:
   ```puppet
   class {'multipath':
-    installed => fasle,
+    installed => false,
   }
   ```
 
