@@ -2,7 +2,7 @@
 # == Class: multipath
 #
 # == Description:
-#    Manage multipath on RHEL systems.
+#    Manage dm multipath on RHEL systems.
 #
 # == Params:
 #
@@ -18,14 +18,61 @@
 #      Should the device-mapper-multipath be installed
 #      Default: true
 #
+#    [*udev_dir*]
+#      The directory where udev device nodes are created. The default value is /dev.
+#      Default: /dev
+#
+#    [*polling_interval*]
+#      Specifies the interval between two path checks in seconds. 
+#      For properly functioning paths, the interval between checks will gradually 
+#      increase to (4 * polling_interval). The default value is 5. 
+#      Default: 5
+#
+#    [*path_selector*]
+#      Specifies the default algorithm to use in determining what path to use for the next I/O
+#      operation. Possible values include:
+#      round-robin 0, queue-length 0, service-time 0
+#      Default: round-robin 0
+#
+#    [*path_grouping_policy*]
+#      Specifies the default path grouping policy to apply to unspecified multipaths.
+#      Possible values include: 
+#        failover, multibus, group_by_serial, group_by_prio, group_by_node_name
+#      Default: failover
+#
+#    [*prio*]
+#      Specifies the default function to call to obtain a path priority value.
+#      Default: const
+#
+#    [*path_checker*]
+#      Specifies the default method used to determine the state of the paths
+#      Default: directio
+#
+#    [*rr_min_io*]
+#      Specifies the number of I/O requests to route to a path before switching 
+#      to the next path in the current path group
+#      Default: 1000
+#
+#    [*rr_weight*]
+#      If set to priorities, then instead of sending rr_min_io requests to a 
+#      path before calling path_selector to choose the next path, the number 
+#      of requests to send is determined by rr_min_io times the path's priority, 
+#      as determined by the prio function. If set to uniform, all path weights are equal.
+#      Default: uniform.
+#
+#    [*failback*]
+#      Manage path group failback
+#      Default: manual
+#
+#    [*no_path_retry*]
+#      A numeric value for this attribute specifies the number of times the system should 
+#      attempt to use a failed path before disabling queueing.
+#      Default: fail
+#
 #    [*user_friendly_names*]
 #      If this is set to yes the multipath -ll command will give mpathX names
 #      to LUNs insted of there numbers.
 #      Default: yes
-#
-#    [*path_grouping_policy*]
-#      Which algorithm to use for multipathing
-#      Default: multibus
 #
 #    [*find_multipaths*]
 #      Should we search for the multipaths?
@@ -33,21 +80,42 @@
 #      Default: yes
 #
 class multipath(
-  $enable = true,
-  $ensure = true,
-  $installed = true,
-  $user_friendly_names = 'yes',
+  $enable               = true,
+  $ensure               = true,
+  $installed            = true,
+  $udev_dir             = "/dev",
+  $polling_interval     = "10",
+  $path_selector        = "\"round-robin 0\"",
   $path_grouping_policy = 'multibus',
-  $find_multipaths = 'yes'
+  $prio                 = "const",
+  $path_checker         = "directio",
+  $rr_min_io            = "1000",
+  $rr_weight            = "uniform",
+  $failback             = "manual",
+  $no_path_retry        = "fail",
+  $user_friendly_names  = 'yes',
+  $find_multipaths      = 'yes'
 ){
   if ($is_virtual == 'false') and ($kernel == 'Linux') {
 
     validate_bool($enable)
     validate_bool($ensure)
-    validate_re($user_friendly_names, '^yes$|^no$')
+    validate_bool($installed)
+
+    validate_re($udev_dir, '^\/')
     validate_re($path_grouping_policy, '^failover$|^multibus$|^group_by_serial$|^group_by_prio$|^group_by_node_name$')
+    validate_re($prio, '^const$|^emc$|^alua$|^tpg_pref$|^ontap$|^rdac$|^hp_sw$|^hds$')
+    validate_re($path_checker, '^tur$|^readsector0$|^emc_clariion$|^hp_sw$|^rdac$|^directio$')
+    validate_re($failback, '^manual$|^immediate$|^followover$')
+    validate_re($no_path_retry, '^fail$|^queue$')
+    validate_re($user_friendly_names, '^yes$|^no$')
     validate_re($find_multipaths, '^yes$|^no$')
       
+    $getuid_callout = $lsbmajdistrelease ? {
+      '5' => "\"/sbin/scsi_id -g -u -s /block/%n\"",
+      '6' => "\"/lib/udev/scsi_id --whitelisted --device=/dev/%n\"",
+    }
+
     $ensure_real = $ensure ? {
       true  => 'running',
       false => 'stopped',
