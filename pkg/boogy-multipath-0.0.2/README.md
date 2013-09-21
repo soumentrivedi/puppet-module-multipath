@@ -11,13 +11,6 @@ The module manages DM-Multipathing on redhat family systems.
    path_grouping_policy => failover, 
   }
   ```
-  To remove multipath:
-  ```puppet
-  class {'multipath':
-    installed => fasle,
-  }
-  ```
-
 ##Other class parameters
   * enable: true or false, default: true
   * ensure: true or false, default: true

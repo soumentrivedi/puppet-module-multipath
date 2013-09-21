@@ -1,0 +1,24 @@
+{
+  "project_page": "https://github.com/boogy/puppet-module-multipath",
+  "source": "https://github.com/boogy/puppet-module-multipath",
+  "checksums": {
+    "manifests/init.pp": "39dce0b6a036bed622527e4b51e74607",
+    "Changelog": "48286baa610102466e1696722261f10f",
+    "templates/multipath.conf.erb": "d505a29d2b61cb14304cb18fbe73b0a1",
+    "Modulefile": "ef256b4205cf87d6f676474c52942cff",
+    "README.md": "2b044a3c22d54b6b971b5f1da0e00ba4",
+    "LICENSE": "111519fac66da8c8b0ce4983cee20176"
+  },
+  "dependencies": [
+
+  ],
+  "types": [
+
+  ],
+  "version": "0.0.2",
+  "description": "Manages DM-Multipathing on redhat family systems.",
+  "name": "boogy-multipath",
+  "summary": "multipath module",
+  "license": "Apache License, Version 2.0",
+  "author": "boogy"
+}
