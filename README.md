@@ -8,7 +8,7 @@ The module manages DM-Multipathing on redhat family systems.
   ```puppet
   class {'multipath':
    user_friendly_names  => 'yes',
-   path_grouping_policy => failover, 
+   path_grouping_policy => "failover", 
   }
   ```
   To remove multipath:
