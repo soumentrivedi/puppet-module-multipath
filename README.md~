@@ -14,8 +14,8 @@ The module manages DM-Multipathing on redhat family systems.
   * enable: true or false, default: true
   * ensure: true or false, default: true
   * installed: true or false, default: true
-  * udev_dir: /dev
-  * polling_interval: 5
+  * udev_dir
+  * polling_interval
   * path_selector: round-robin 0
   * path_grouping_policy: failover|multibus|group_by_serial|group_by_prio|group_by_node_name, 
     default: multibus
