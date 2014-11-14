@@ -2,7 +2,9 @@ fixtures:
   forge_modules:
     stdlib:
       repo: "puppetlabs/stdlib"
+      ref: "4.4.0"      
     boolean:
       repo: "adrien/boolean"
+      ref: "1.0.1"
   symlinks:
     multipath: "#{source_dir}"
