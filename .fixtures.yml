@@ -1,0 +1,8 @@
+fixtures:
+  forge_modules:
+    stdlib:
+      repo: "puppetlabs/stdlib"
+    boolean:
+      repo: "adrien/boolean"
+  symlinks:
+    multipath: "#{source_dir}"
