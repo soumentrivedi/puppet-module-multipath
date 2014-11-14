@@ -1,25 +1,32 @@
-#
-# File managed by puppet
-#
 defaults {
-    udev_dir                <%= @udev_dir %>
-    polling_interval        <%= @pooling_interval %>
-    path_selector           <%= @path_selector %>
-    path_grouping_policy    <%= @path_grouping_policy %>
-    getuid_callout          <%= @get_uid_callout %>
-    prio                    <%= @prio %>
-    path_checker            <%= @path_checker %>
-    rr_min_io               <%= @rr_min_io %>
-    rr_weight               <%= @rr_weight %>
-    failback                <%= @failback %>
-    no_path_retry           <%= @no_path_retry %>
-    user_friendly_names     <%= @user_friendly_names %>
-    find_multipaths         <%= @find_multipaths %>
+	<% if @udev_dir %>udev_dir                <%= @udev_dir %><% end %>
+    <% if @polling_interval %>polling_interval        <%= @polling_interval %><% end %>
+    <% if @path_selector %>path_selector           <%= @path_selector %><% end %>    
+    <% if @get_uid_callout %>getuid_callout          <%= @get_uid_callout %><% end %>
+    <% if @prio %>prio                    <%= @prio %><% end %>
+    <% if @path_checker %>path_checker            <%= @path_checker %><% end %>
+    <% if @rr_min_io %>rr_min_io               <%= @rr_min_io %><% end %>
+    <% if @rr_weight %>rr_weight               <%= @rr_weight %><% end %>
+    <% if @failback %>failback                <%= @failback %><% end %>
+    <% if @no_path_retry %>no_path_retry           <%= @no_path_retry %><% end %>
+    <% if @user_friendly_names %>user_friendly_names     <%= @user_friendly_names %><% end %>
+    <% if @find_multipaths %>find_multipaths         <%= @find_multipaths %><% end %>
 }
 
-blacklist { 
-    device { 
-        vendor "LSILOGIC" 
-        product "Logical Volume" 
-    } 
+blacklist {
+      devnode                "*"
+}
+
+blacklist_exceptions {
+      devnode                "^(sd)[a-z]*"
+      devnode                "^(dm)[0-9]*"
+}
+
+# SVC
+device {
+      vendor                  "IBM"
+      product                 "2145"
+    <% if @path_grouping_policy %>path_grouping_policy    <%= @path_grouping_policy %><% end %>
+	<% if @lsbmajdistrelease == "5" %>prio_callout           "/sbin/mpath_prio_alua /dev/%n"<% end %>
+	<% if @lsbmajdistrelease == "6" %>prio                   "alua"<% end %>
 }
